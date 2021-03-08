@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "stream.h"
 
-int main(const int argc, const char* const* const argv) {
+signed main(const signed argc, const char* const* const argv) {
 	printf("Terminator (C) Copyright Mario Sieg 2020!\n");
 
 	struct stream_t* stream;
@@ -10,7 +10,8 @@ int main(const int argc, const char* const* const argv) {
 	stream_encode_byte8(stream, 0xFF);
 	stream_encode_byte8(stream, 0xAA);
 	stream_encode_byte8(stream, 0xBB);
-	stream_reverse(stream);
+	stream_encode_db(stream, 5, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE);
+	stream_encode_qword64(stream, 0xAABBCCDDEEFF);
 
 	stream_dump(stream);
 
