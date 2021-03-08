@@ -28,13 +28,29 @@ bool stream_with_capacity(struct stream_t** const out, const size_t cap) {
 	return *out != NULL;
 }
 
-void stream_release(struct stream_t** const in) {
-	if (!in) {
+void stream_release(struct stream_t** const self) {
+	if (!self) {
 		return;
 	}
-	free((*in)->mem);
-	free(*in);
-	*in = NULL;
+	free((*self)->mem);
+	free(*self);
+	*self = NULL;
+}
+
+bool stream_reserve(struct stream_t* const self, const size_t cap) {
+	if (cap < self->cap) {
+		return true;
+	}
+
+	uint8_t* mem = realloc(self->mem, cap);
+	if (!mem) {
+		return false;
+	}
+
+	self->cap = cap;
+	self->mem = mem;
+
+	return true;
 }
 
 bool stream_push(struct stream_t* const self, const uint8_t value) {
@@ -117,10 +133,48 @@ bool stream_encode_double64(struct stream_t* const self, const double value) {
 	return written == sizeof value;
 }
 
+bool stream_encode_ascii(struct stream_t* const self, const char* const str, const size_t len) {
+	if (!stream_reserve(self, self->size + len)) {
+		return false;
+	}
+	register const char* iter = str;
+	register const char* end = str + len - 1;
+	register size_t written = 0;
+	while (iter != end) {
+		written += stream_encode_byte8(self, *iter++);
+	}
+	return written == len;
+}
+
+bool stream_encode_asciz(struct stream_t* const self, const char* const str) {
+	const size_t len = strlen(str);
+	return stream_encode_ascii(self, str, len) && stream_encode_byte8(self, '\0');
+}
+
+bool stream_encode_memblock(struct stream_t* const self, const void* const mem, const size_t len) {
+	return stream_encode_ascii(self, (const char*)mem, len);
+}
+
 void stream_dump(const struct stream_t* const self) {
 	register const uint8_t* iter = self->mem;
 	register const uint8_t* const end = self->mem + self->size - 1;
 	while (iter != end) {
 		printf("%02X ", *iter++);
 	}
+}
+
+size_t stream_write(const struct stream_t* const self, FILE* const out) {
+	return fwrite(self->mem, sizeof(uint8_t), self->size, out);
+}
+
+uint8_t* stream_get_mem(struct stream_t* const self) {
+	return self->mem;
+}
+
+size_t stream_get_size(struct stream_t* const self) {
+	return self->size;
+}
+
+size_t stream_get_cap(struct stream_t* const self) {
+	return self->cap;
 }

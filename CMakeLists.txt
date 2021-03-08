@@ -5,3 +5,4 @@ add_library("libterminator" STATIC
 "src/stream.h")
 
 add_executable("terminator" "src/exec.c")
+target_link_libraries("terminator" "libterminator")
