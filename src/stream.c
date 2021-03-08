@@ -53,8 +53,28 @@ bool stream_reserve(struct stream_t* const self, const size_t cap) {
 	return true;
 }
 
+void stream_reverse(struct stream_t* const self) {
+	register uint8_t* lo = self->mem;
+	register uint8_t* hi = self->mem + self->size - 1;
+
+	while (lo < hi) {
+		const uint8_t tmp = *lo;
+		*lo++ = *hi;
+		*hi-- = tmp;
+	}
+}
+
+void stream_dyn_iter(struct stream_t* const  self, void (*const callback)(uint8_t*)) {
+	register uint8_t* lo = self->mem;
+	register uint8_t* hi = self->mem + self->size;
+
+	while (lo < hi) {
+		callback(lo++);
+	}
+}
+
 bool stream_push(struct stream_t* const self, const uint8_t value) {
-	if (self->size + 1 >= self->cap) {
+	if (self->size >= self->cap) {
 		self->cap <<= 1;
 		uint8_t* const mem = realloc(self->mem, self->cap);
 		if (!mem) {
@@ -138,9 +158,9 @@ bool stream_encode_ascii(struct stream_t* const self, const char* const str, con
 		return false;
 	}
 	register const char* iter = str;
-	register const char* end = str + len - 1;
+	register const char* end = str + len;
 	register size_t written = 0;
-	while (iter != end) {
+	while (iter < end) {
 		written += stream_encode_byte8(self, *iter++);
 	}
 	return written == len;
@@ -157,8 +177,8 @@ bool stream_encode_memblock(struct stream_t* const self, const void* const mem, 
 
 void stream_dump(const struct stream_t* const self) {
 	register const uint8_t* iter = self->mem;
-	register const uint8_t* const end = self->mem + self->size - 1;
-	while (iter != end) {
+	register const uint8_t* const end = self->mem + self->size;
+	while (iter < end) {
 		printf("%02X ", *iter++);
 	}
 }

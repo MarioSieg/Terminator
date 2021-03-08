@@ -10,7 +10,7 @@ int main(const int argc, const char* const* const argv) {
 	stream_encode_byte8(stream, 0xFF);
 	stream_encode_byte8(stream, 0xAA);
 	stream_encode_byte8(stream, 0xBB);
-	stream_encode_asciz(stream, "Hello World!");
+	stream_reverse(stream);
 
 	stream_dump(stream);
 
