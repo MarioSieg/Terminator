@@ -1,5 +1,5 @@
-#ifndef stream_H
-#define stream_H
+#ifndef STREAM_H
+#define STREAM_H
 
 #include <stdbool.h>
 #include <stdint.h>

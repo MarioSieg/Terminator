@@ -1,4 +1,5 @@
 #include "stream.h"
+#include "branch_hints.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -16,11 +17,11 @@ bool stream_create(struct stream_t** const out) {
 }
 
 bool stream_with_capacity(struct stream_t** const out, const size_t cap) {
-	if (!out) {
+	if (UNLIKELY(!out)) {
 		return false;
 	}
 	*out = malloc(sizeof(struct stream_t));
-	if (!*out) {
+	if (UNLIKELY(!*out)) {
 		return false;
 	}
 	(*out)->cap = 16;
@@ -30,7 +31,7 @@ bool stream_with_capacity(struct stream_t** const out, const size_t cap) {
 }
 
 void stream_release(struct stream_t** const self) {
-	if (!self) {
+	if (UNLIKELY(!self)) {
 		return;
 	}
 	free((*self)->mem);
@@ -39,12 +40,12 @@ void stream_release(struct stream_t** const self) {
 }
 
 bool stream_reserve(struct stream_t* const self, const size_t cap) {
-	if (cap < self->cap) {
+	if (LIKELY(cap < self->cap)) {
 		return true;
 	}
 
 	uint8_t* mem = realloc(self->mem, cap);
-	if (!mem) {
+	if (UNLIKELY(!mem)) {
 		return false;
 	}
 
@@ -75,10 +76,10 @@ void stream_dyn_iter(struct stream_t* const self, void (*const callback)(uint8_t
 }
 
 bool stream_push(struct stream_t* const self, const uint8_t value) {
-	if (self->size >= self->cap) {
+	if (UNLIKELY(self->size >= self->cap)) {
 		self->cap <<= 1;
 		uint8_t* const mem = realloc(self->mem, self->cap);
-		if (!mem) {
+		if (UNLIKELY(!mem)) {
 			return false;
 		}
 		self->mem = mem;
@@ -103,68 +104,48 @@ bool stream_encode_word16(struct stream_t* const self, const uint16_t value) {
 }
 
 bool stream_encode_dword32(struct stream_t* const self, const uint32_t value) {
-	uint8_t written = 0;
-	written += stream_push(self, value & UINT32_C(0xFF));
-	written += stream_push(self, value >> UINT32_C(8) & UINT32_C(0xFF));
-	written += stream_push(self, value >> UINT32_C(16) & UINT32_C(0xFF));
-	written += stream_push(self, value >> UINT32_C(24) & UINT32_C(0xFF));
-	return written == sizeof value;
+	if (UNLIKELY(!stream_reserve(self, self->size + sizeof value))) {
+		return false;
+	}
+	memcpy(self->mem + self->size, &value, sizeof value);
+	self->size += sizeof value;
+	return true;
 }
 
 bool stream_encode_qword64(struct stream_t* const self, const uint64_t value) {
-	uint8_t written = 0;
-	written += stream_push(self, value & UINT64_C(0xFF));
-	written += stream_push(self, value >> UINT64_C(8) & UINT64_C(0xFF));
-	written += stream_push(self, value >> UINT64_C(16) & UINT64_C(0xFF));
-	written += stream_push(self, value >> UINT64_C(24) & UINT64_C(0xFF));
-	written += stream_push(self, value >> UINT64_C(32) & UINT64_C(0xFF));
-	written += stream_push(self, value >> UINT64_C(40) & UINT64_C(0xFF));
-	written += stream_push(self, value >> UINT64_C(48) & UINT64_C(0xFF));
-	written += stream_push(self, value >> UINT64_C(56) & UINT64_C(0xFF));
-	return written == sizeof value;
+	if (UNLIKELY(!stream_reserve(self, self->size + sizeof value))) {
+		return false;
+	}
+	memcpy(self->mem + self->size, &value, sizeof value);
+	self->size += sizeof value;
+	return true;
 }
 
 bool stream_encode_single32(struct stream_t* const self, const float value) {
-	const union {
-		const uint32_t u;
-		const float f;
-	} castor = {.f = value};
-	uint8_t written = 0;
-	written += stream_push(self, castor.u & UINT32_C(0xFF));
-	written += stream_push(self, castor.u >> UINT32_C(8) & UINT32_C(0xFF));
-	written += stream_push(self, castor.u >> UINT32_C(16) & UINT32_C(0xFF));
-	written += stream_push(self, castor.u >> UINT32_C(24) & UINT32_C(0xFF));
-	return written == sizeof value;
+	if (UNLIKELY(!stream_reserve(self, self->size + sizeof value))) {
+		return false;
+	}
+	memcpy(self->mem + self->size, &value, sizeof value);
+	self->size += sizeof value;
+	return true;
 }
 
 bool stream_encode_double64(struct stream_t* const self, const double value) {
-	const union {
-		const uint64_t u;
-		const double f;
-	} castor = {.f = value};
-	uint8_t written = 0;
-	written += stream_push(self, castor.u & UINT64_C(0xFF));
-	written += stream_push(self, castor.u >> UINT64_C(8) & UINT64_C(0xFF));
-	written += stream_push(self, castor.u >> UINT64_C(16) & UINT64_C(0xFF));
-	written += stream_push(self, castor.u >> UINT64_C(24) & UINT64_C(0xFF));
-	written += stream_push(self, castor.u >> UINT64_C(32) & UINT64_C(0xFF));
-	written += stream_push(self, castor.u >> UINT64_C(40) & UINT64_C(0xFF));
-	written += stream_push(self, castor.u >> UINT64_C(48) & UINT64_C(0xFF));
-	written += stream_push(self, castor.u >> UINT64_C(56) & UINT64_C(0xFF));
-	return written == sizeof value;
+	if (UNLIKELY(!stream_reserve(self, self->size + sizeof value))) {
+		return false;
+	}
+	memcpy(self->mem + self->size, &value, sizeof value);
+	self->size += sizeof value;
+	return true;
 }
 
 bool stream_encode_ascii(struct stream_t* const self, const char* const str, const size_t len) {
-	if (!stream_reserve(self, self->size + len)) {
+	if (UNLIKELY(!stream_reserve(self, self->size + len))) {
 		return false;
 	}
-	register const char* iter = str;
-	register const char* end = str + len;
-	register size_t written = 0;
-	while (iter < end) {
-		written += stream_encode_byte8(self, *iter++);
-	}
-	return written == len;
+	memcpy(self->mem + self->size, str, sizeof(char) * len);
+	self->size += len;
+	return true;
 }
 
 bool stream_encode_asciz(struct stream_t* const self, const char* const str) {
@@ -200,7 +181,7 @@ size_t stream_write(const struct stream_t* const self, FILE* const out) {
 
 bool stream_serialize(const struct stream_t* const self, const char* const path) {
 	FILE* const f = fopen(path, "wb");
-	if (!f) {
+	if (UNLIKELY(!f)) {
 		return false;
 	}
 	const uint64_t size = (uint64_t)self->size;
@@ -212,18 +193,18 @@ bool stream_serialize(const struct stream_t* const self, const char* const path)
 
 bool stream_deserialize(struct stream_t** const out, const char* const path) {
 	FILE* const f = fopen(path, "rb");
-	if (!f) {
+	if (UNLIKELY(!f)) {
 		return false;
 	}
 	uint64_t size = 0;
 	fread(&size, sizeof size, 1, f);
-	if (!size) {
+	if (UNLIKELY(!size)) {
 		return false;
 	}
-	if (!stream_with_capacity(out, size)) {
+	if (UNLIKELY(!stream_with_capacity(out, size))) {
 		return false;
 	}
-	fread(&(*out)->mem, sizeof(uint8_t), size, f);
+	fread((*out)->mem, sizeof(uint8_t), size, f);
 	(*out)->size = (*out)->cap = (size_t)size;
 	return true;
 }
