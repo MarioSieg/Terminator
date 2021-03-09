@@ -24,7 +24,7 @@ bool stream_with_capacity(struct stream_t** const out, const size_t cap) {
 	if (UNLIKELY(!*out)) {
 		return false;
 	}
-	(*out)->cap = 16;
+	(*out)->cap = cap;
 	(*out)->mem = malloc(sizeof(uint8_t) * (*out)->cap);
 	(*out)->size = 0;
 	return *out != NULL;
@@ -44,7 +44,7 @@ bool stream_reserve(struct stream_t* const self, const size_t cap) {
 		return true;
 	}
 
-	uint8_t* mem = realloc(self->mem, cap);
+	uint8_t* const mem = realloc(self->mem, cap);
 	if (UNLIKELY(!mem)) {
 		return false;
 	}
@@ -68,7 +68,7 @@ void stream_reverse(struct stream_t* const self) {
 
 void stream_dyn_iter(struct stream_t* const self, void (*const callback)(uint8_t*)) {
 	register uint8_t* lo = self->mem;
-	register uint8_t* hi = self->mem + self->size;
+	register uint8_t* const hi = self->mem + self->size;
 
 	while (lo < hi) {
 		callback(lo++);
@@ -154,15 +154,15 @@ bool stream_encode_asciz(struct stream_t* const self, const char* const str) {
 }
 
 bool stream_encode_memblock(struct stream_t* const self, const void* const mem, const size_t len) {
-	return stream_encode_ascii(self, (const char*)mem, len);
+	return stream_encode_ascii(self, (const char* const)mem, len);
 }
 
 bool stream_encode_db(struct stream_t* self, const signed argc, ...) {
 	va_list ptr;
 	va_start(ptr, argc);
-	int num = 0;
+	signed num = 0;
 	for (register signed i = 0; i < argc; ++i) {
-		num += stream_encode_byte8(self, va_arg(ptr, uint8_t));
+		num += stream_encode_byte8(self, va_arg(ptr, signed));
 	}
 	return num == argc;
 }
@@ -180,7 +180,15 @@ size_t stream_write(const struct stream_t* const self, FILE* const out) {
 }
 
 bool stream_serialize(const struct stream_t* const self, const char* const path) {
-	FILE* const f = fopen(path, "wb");
+	FILE* f;
+	#ifdef _MSC_VER
+	const errno_t err = fopen_s(&f, path, "wb");
+	if (UNLIKELY(err)) {
+		return false;
+	}
+	#else
+	f = fopen(path, "wb");
+	#endif
 	if (UNLIKELY(!f)) {
 		return false;
 	}
@@ -192,7 +200,15 @@ bool stream_serialize(const struct stream_t* const self, const char* const path)
 }
 
 bool stream_deserialize(struct stream_t** const out, const char* const path) {
-	FILE* const f = fopen(path, "rb");
+	FILE* f;
+	#ifdef _MSC_VER
+	const errno_t err = fopen_s(&f, path, "rb");
+	if (UNLIKELY(err)) {
+		return false;
+	}
+	#else
+	f = fopen(path, "wb");
+	#endif
 	if (UNLIKELY(!f)) {
 		return false;
 	}

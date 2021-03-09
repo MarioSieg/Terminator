@@ -2,6 +2,9 @@
 #include "stream.h"
 
 signed main(const signed argc, const char* const* const argv) {
+	(void)argc;
+	(void)argv;
+
 	printf("Terminator (C) Copyright Mario Sieg 2020!\n");
 
 	struct stream_t* stream;
