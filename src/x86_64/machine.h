@@ -14,7 +14,7 @@ extern "C" {
 #define TER_X64_MOD_BYTE_SIGNED_DISPLACE	0x01
 #define TER_X64_MOD_DWORD_SIGNED_DISPLACE	0x02
 #define TER_X64_MOD_REGISTER_ADDRESS		0x03
-	
+
 extern uint8_t ter_pack_rex(bool w, bool r, bool x, bool b);
 extern uint8_t ter_pack_trio(uint8_t bi01, uint8_t b234, uint8_t b567);
 

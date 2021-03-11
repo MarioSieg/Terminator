@@ -1,10 +1,10 @@
-#include "stream.h"
-#include "branch_hints.h"
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "stream.h"
+#include "branch_hints.h"
 
 struct ter_stream_t {
 	uint8_t* mem;
@@ -185,15 +185,7 @@ size_t ter_stream_write(const struct ter_stream_t* const self, FILE* const out) 
 }
 
 bool ter_stream_serialize(const struct ter_stream_t* const self, const char* const path) {
-	FILE* f;
-	#ifdef _MSC_VER
-	const errno_t err = fopen_s(&f, path, "wb");
-	if (unlikely(err)) {
-		return false;
-	}
-	#else
-	f = fopen(path, "wb");
-	#endif
+	FILE* f = fopen(path, "wb");
 	if (unlikely(!f)) {
 		return false;
 	}
@@ -205,15 +197,7 @@ bool ter_stream_serialize(const struct ter_stream_t* const self, const char* con
 }
 
 bool ter_stream_deserialize(struct ter_stream_t** const out, const char* const path) {
-	FILE* f;
-	#ifdef _MSC_VER
-	const errno_t err = fopen_s(&f, path, "rb");
-	if (unlikely(err)) {
-		return false;
-	}
-	#else
-	f = fopen(path, "wb");
-	#endif
+	FILE* f = fopen(path, "wb");
 	if (unlikely(!f)) {
 		return false;
 	}

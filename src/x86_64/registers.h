@@ -17,7 +17,7 @@ extern "C" {
         -> Debug Registers (DR*)
         -> Control Registers (CR*)
 */
-enum ter_x64_register {
+enum ter_x64_register_t {
 	TER_x64_REGISTER_RAX,
 	TER_x64_REGISTER_EAX,
 	TER_x64_REGISTER_AX,
@@ -109,10 +109,10 @@ enum ter_x64_register {
 	TER_x64_REGISTER_COUNT
 };
 
-extern bool ter_x64_register_is_accumulator(const enum ter_x64_register reg);
-extern bool ter_x64_register_is_high_byte(const enum ter_x64_register reg);
-extern bool ter_x64_register_is_uniform_byte(const enum ter_x64_register reg);
-extern bool ter_x64_register_is_extended(const enum ter_x64_register reg);
+extern bool ter_x64_register_is_accumulator(const enum ter_x64_register_t reg);
+extern bool ter_x64_register_is_high_byte(const enum ter_x64_register_t reg);
+extern bool ter_x64_register_is_uniform_byte(const enum ter_x64_register_t reg);
+extern bool ter_x64_register_is_extended(const enum ter_x64_register_t reg);
 
 extern const uint8_t TER_X64_REGISTER_ID_TABLE[TER_x64_REGISTER_COUNT];
 extern const uint8_t TER_X64_REGISTER_SIZE_TABLE[TER_x64_REGISTER_COUNT];

@@ -10,7 +10,7 @@ extern "C" {
 
 #define TER_X64_MAX_INSTRUCTION_BYTES 16
 
-enum ter_x64_operand_flags {
+enum ter_x64_operand_flags_t {
 	TER_X64_OPERAND_FLAGS_NONE = 0,
 
 	TER_X64_OPERAND_FLAGS_REG8 = 1 << 1,
@@ -32,26 +32,15 @@ enum ter_x64_operand_flags {
 	TER_X64_OPERAND_FLAGS_IMM16 = 1 << 14,
 	TER_X64_OPERAND_FLAGS_IMM32 = 1 << 15,
 	TER_X64_OPERAND_FLAGS_IMM64 = 1 << 16,
-
-	TER_X64_OPERAND_FLAGS_GPR = TER_X64_OPERAND_FLAGS_REG8 | TER_X64_OPERAND_FLAGS_REG8_AL | TER_X64_OPERAND_FLAGS_REG16 | TER_X64_OPERAND_FLAGS_REG16_AX | TER_X64_OPERAND_FLAGS_REG32 |
-	TER_X64_OPERAND_FLAGS_REG32_EAX | TER_X64_OPERAND_FLAGS_REG64 | TER_X64_OPERAND_FLAGS_REG64_RAX,
-	TER_X64_OPERAND_FLAGS_MEM = TER_X64_OPERAND_FLAGS_MEM8 | TER_X64_OPERAND_FLAGS_MEM16 | TER_X64_OPERAND_FLAGS_MEM32 | TER_X64_OPERAND_FLAGS_MEM64,
-	TER_X64_OPERAND_FLAGS_IMM = TER_X64_OPERAND_FLAGS_IMM8 | TER_X64_OPERAND_FLAGS_IMM16 | TER_X64_OPERAND_FLAGS_IMM32 | TER_X64_OPERAND_FLAGS_IMM64,
-	TER_X64_OPERAND_FLAGS_AKKUMULATOR = TER_X64_OPERAND_FLAGS_REG8_AL | TER_X64_OPERAND_FLAGS_REG16_AX | TER_X64_OPERAND_FLAGS_REG32_EAX | TER_X64_OPERAND_FLAGS_REG64_RAX,
-	TER_X64_OPERAND_FLAGS_GPR_16_TO_64 = TER_X64_OPERAND_FLAGS_REG16 | TER_X64_OPERAND_FLAGS_REG16_AX | TER_X64_OPERAND_FLAGS_REG32 | TER_X64_OPERAND_FLAGS_REG32_EAX | TER_X64_OPERAND_FLAGS_REG64 |
-	TER_X64_OPERAND_FLAGS_REG64_RAX,
-	TER_X64_OPERAND_FLAGS_ANY_MEM_16_TO_64 = TER_X64_OPERAND_FLAGS_MEM16 | TER_X64_OPERAND_FLAGS_MEM32 | TER_X64_OPERAND_FLAGS_MEM64,
-	TER_X64_OPERAND_FLAGS_ANY_GPR_OR_MEM_16_TO_64 = TER_X64_OPERAND_FLAGS_REG16 | TER_X64_OPERAND_FLAGS_REG16_AX | TER_X64_OPERAND_FLAGS_MEM16 | TER_X64_OPERAND_FLAGS_REG32 | TER_X64_OPERAND_FLAGS_REG32_EAX | TER_X64_OPERAND_FLAGS_MEM32 | TER_X64_OPERAND_FLAGS_REG64 | TER_X64_OPERAND_FLAGS_REG64_RAX | TER_X64_OPERAND_FLAGS_MEM64,
-	TER_X64_OPERAND_FLAGS_ImplicitAkkuGpr16To64 = TER_X64_OPERAND_FLAGS_REG64_RAX | TER_X64_OPERAND_FLAGS_REG32_EAX | TER_X64_OPERAND_FLAGS_REG16_AX
 };
 
-extern bool ter_x64_operand_flags_is_explicit(enum ter_x64_operand_flags flags);
-extern bool ter_x64_operand_flags_is_accumulator(enum ter_x64_operand_flags flags);
-extern bool ter_x64_operand_flags_is_immediate(enum ter_x64_operand_flags flags);
-extern bool ter_x64_operand_flags_is_memory(enum ter_x64_operand_flags flags);
-extern uint8_t ter_x64_operand_flags_compute_operand_size(enum ter_x64_operand_flags flags);
+extern bool ter_x64_operand_flags_is_explicit(enum ter_x64_operand_flags_t flags);
+extern bool ter_x64_operand_flags_is_accumulator(enum ter_x64_operand_flags_t flags);
+extern bool ter_x64_operand_flags_is_immediate(enum ter_x64_operand_flags_t flags);
+extern bool ter_x64_operand_flags_is_memory(enum ter_x64_operand_flags_t flags);
+extern uint8_t ter_x64_operand_flags_compute_operand_size(enum ter_x64_operand_flags_t flags);
 
-enum ter_x64_instruction {
+enum ter_x64_instruction_t {
 	TER_X64_INSTRUCTION_ADC,
 
 	TER_X64_INSTRUCTION_COUNT

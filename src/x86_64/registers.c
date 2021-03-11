@@ -1,18 +1,18 @@
 #include "registers.h"
 
-bool ter_x64_register_is_accumulator(const enum ter_x64_register reg) {
+bool ter_x64_register_is_accumulator(const enum ter_x64_register_t reg) {
 	return reg == TER_x64_REGISTER_AL || reg == TER_x64_REGISTER_AX || reg == TER_x64_REGISTER_EAX || reg == TER_x64_REGISTER_RAX;
 }
 
-bool ter_x64_register_is_high_byte(const enum ter_x64_register reg) {
+bool ter_x64_register_is_high_byte(const enum ter_x64_register_t reg) {
 	return reg == TER_x64_REGISTER_AH || reg == TER_x64_REGISTER_BH || reg == TER_x64_REGISTER_CH || reg == TER_x64_REGISTER_DH;
 }
 
-bool ter_x64_register_is_uniform_byte(const enum ter_x64_register reg) {
+bool ter_x64_register_is_uniform_byte(const enum ter_x64_register_t reg) {
 	return reg == TER_x64_REGISTER_SIL || reg == TER_x64_REGISTER_DIL || reg == TER_x64_REGISTER_SPL || reg == TER_x64_REGISTER_BPL;
 }
 
-bool ter_x64_register_is_extended(const enum ter_x64_register reg) {
+bool ter_x64_register_is_extended(const enum ter_x64_register_t reg) {
 	return reg >= TER_x64_REGISTER_R8 && reg <= TER_x64_REGISTER_R15B;
 }
 
