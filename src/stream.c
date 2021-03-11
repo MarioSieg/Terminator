@@ -167,6 +167,11 @@ bool ter_stream_encode_db(struct ter_stream_t* self, const signed argc, ...) {
 	return num == argc;
 }
 
+bool ter_stream_encode_imm(struct ter_stream_t* const self, const union ter_imm_t imm) {
+	const uint8_t size = ter_imm_compute_size(imm);
+	return ter_stream_encode_memblock(self, &imm, size);
+}
+
 void ter_stream_dump(const struct ter_stream_t* const self) {
 	register const uint8_t* iter = self->mem;
 	register const uint8_t* const end = self->mem + self->size;

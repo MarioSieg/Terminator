@@ -1,5 +1,5 @@
-#ifndef BRANCH_HINTS_H
-#define BRANCH_HINTS_H
+#ifndef TER_BRANCH_HINTS_H
+#define TER_BRANCH_HINTS_H
 
 #if defined(__GNUC__) || defined(__clang__)
 #define likely(x)	__builtin_expect(!!(x), 1)

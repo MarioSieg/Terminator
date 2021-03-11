@@ -1,9 +1,11 @@
-#ifndef ter_stream_H
-#define ter_stream_H
+#ifndef TER_STREAM_H
+#define TER_STREAM_H
 
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#include "imm.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +31,7 @@ extern bool ter_stream_encode_ascii(struct ter_stream_t* self, const char* str, 
 extern bool ter_stream_encode_asciz(struct ter_stream_t* self, const char* str);
 extern bool ter_stream_encode_memblock(struct ter_stream_t* self, const void* mem, size_t len);
 extern bool ter_stream_encode_db(struct ter_stream_t* self, signed argc, ...);
+extern bool ter_stream_encode_imm(struct ter_stream_t* self, union ter_imm_t imm);
 
 extern uint8_t* ter_stream_get_mem(struct ter_stream_t* self);
 extern size_t ter_stream_get_size(const struct ter_stream_t* self);
