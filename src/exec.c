@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "stream.h"
 
 signed main(const signed argc, const char* const* const argv) {
@@ -7,15 +8,15 @@ signed main(const signed argc, const char* const* const argv) {
 
 	printf("Terminator (C) Copyright Mario Sieg 2020!\n");
 
-	struct stream_t* stream;
-	stream_create(&stream);
+	struct ter_stream_t* ter_stream;
+	ter_stream_create(&ter_stream);
 
-	stream_encode_qword64(stream, 0xAABBCCDDEEFF);
-	stream_encode_asciz(stream, "HelloWorld!");
+	ter_stream_encode_qword64(ter_stream, 0xAABBCCDDEEFF);
+	ter_stream_encode_asciz(ter_stream, "HelloWorld!");
 
-	stream_dump(stream);
+	ter_stream_dump(ter_stream);
 
-	stream_release(&stream);
+	ter_stream_release(&ter_stream);
 
 	return 0;
 }
