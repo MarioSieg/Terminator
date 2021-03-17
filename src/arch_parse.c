@@ -81,7 +81,7 @@ enum ter_arch_parse_result_t ter_arch_parse(
 	}
 
 	// copy number literal to buffer
-	const ptrdiff_t sep_dist = sep - line;
+	ptrdiff_t sep_dist = sep - line;
 	char num_buf[16];
 	strncpy(num_buf, line, sep_dist);
 	num_buf[sep_dist] = '\0';
@@ -97,10 +97,40 @@ enum ter_arch_parse_result_t ter_arch_parse(
 	// forward to separator and skip it too:
 	line = sep;
 	++line;
+	long opcode_ex = 0xFF;
+	const char* const none = TER_ARCH_NONE;
+	if (*line == TER_ARCH_HEX_PREFIX) {
+		// skip hex prefix
+		++line;
 
-	// todo: parse extension
+		// find next separator to copy length '|':
+		sep = strchr(line, TER_ARCH_PARSE_SEPARATOR);
+		if (unlikely(!sep)) {
+			return TER_ARCH_PARSE_RESULT_ERROR;
+		}
+
+		// copy number literal to buffer
+		sep_dist = sep - line;
+		strncpy(num_buf, line, sep_dist);
+		num_buf[sep_dist] = '\0';
+
+		// convert hex opcode extension to long
+		// 16 = hex radix
+		opcode_ex = strtol(num_buf, &end, 16);
+		if (unlikely(end == num_buf || *end != '\0' || errno == ERANGE)) {
+			return TER_ARCH_PARSE_RESULT_ERROR;
+		}
+
+	}
+	else if (likely(*line == *none && line[1] == none[1])) {
+		line += 2; // skip NA
+	}
+	else {
+		return TER_ARCH_PARSE_RESULT_ERROR;
+	}
 
 	variation->primary_opcode = opcode & 0xFF;
+	variation->opcode_extension = opcode_ex & 0xFF;
 
 	return TER_ARCH_PARSE_RESULT_VARIATION;
 }

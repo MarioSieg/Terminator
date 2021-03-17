@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,7 +8,7 @@
 #include "branch_hints.h"
 
 struct ter_stream_t {
-	uint8_t* mem;
+	unsigned char* mem;
 	size_t size;
 	size_t cap;
 };
@@ -25,7 +26,7 @@ bool ter_stream_with_capacity(struct ter_stream_t** const out, const size_t cap)
 		return false;
 	}
 	(*out)->cap = cap;
-	(*out)->mem = malloc(sizeof(uint8_t) * (*out)->cap);
+	(*out)->mem = malloc(sizeof(unsigned char) * (*out)->cap);
 	(*out)->size = 0;
 	return *out != NULL;
 }
@@ -44,7 +45,7 @@ bool ter_stream_reserve(struct ter_stream_t* const self, const size_t cap) {
 		return true;
 	}
 
-	uint8_t* const mem = realloc(self->mem, cap);
+	unsigned char* const mem = realloc(self->mem, cap);
 	if (unlikely(!mem)) {
 		return false;
 	}
@@ -56,29 +57,29 @@ bool ter_stream_reserve(struct ter_stream_t* const self, const size_t cap) {
 }
 
 void ter_stream_reverse(struct ter_stream_t* const self) {
-	register uint8_t* lo = self->mem;
-	register uint8_t* hi = self->mem + self->size - 1;
+	register unsigned char* lo = self->mem;
+	register unsigned char* hi = self->mem + self->size - 1;
 
 	while (lo < hi) {
-		const uint8_t tmp = *lo;
+		const unsigned char tmp = *lo;
 		*lo++ = *hi;
 		*hi-- = tmp;
 	}
 }
 
-void ter_stream_dyn_iter(struct ter_stream_t* const self, void (*const callback)(uint8_t*)) {
-	register uint8_t* lo = self->mem;
-	register uint8_t* const hi = self->mem + self->size;
+void ter_stream_dyn_iter(struct ter_stream_t* const self, void (*const callback)(unsigned char*)) {
+	register unsigned char* lo = self->mem;
+	register unsigned char* const hi = self->mem + self->size;
 
 	while (lo < hi) {
 		callback(lo++);
 	}
 }
 
-bool ter_stream_push(struct ter_stream_t* const self, const uint8_t value) {
+bool ter_stream_push(struct ter_stream_t* const self, const unsigned char value) {
 	if (unlikely(self->size >= self->cap)) {
 		self->cap <<= 1;
-		uint8_t* const mem = realloc(self->mem, self->cap);
+		unsigned char* const mem = realloc(self->mem, self->cap);
 		if (unlikely(!mem)) {
 			return false;
 		}
@@ -95,15 +96,15 @@ void ter_stream_reset(struct ter_stream_t* const self) {
 	self->cap = 0;
 }
 
-bool ter_stream_encode_byte8(struct ter_stream_t* const self, const uint8_t value) {
+bool ter_stream_encode_byte8(struct ter_stream_t* const self, const unsigned char value) {
 	return ter_stream_push(self, value);
 }
 
-bool ter_stream_encode_word16(struct ter_stream_t* const self, const uint16_t value) {
-	return ter_stream_push(self, value & UINT16_C(0xFF)) && ter_stream_push(self, value >> UINT16_C(8) & UINT16_C(0xFF));
+bool ter_stream_encode_word16(struct ter_stream_t* const self, const unsigned short int value) {
+	return ter_stream_push(self, value & 0xFF) && ter_stream_push(self, value >> 8 & 0xFF);
 }
 
-bool ter_stream_encode_dword32(struct ter_stream_t* const self, const uint32_t value) {
+bool ter_stream_encode_dword32(struct ter_stream_t* const self, const unsigned int value) {
 	if (unlikely(!ter_stream_reserve(self, self->size + sizeof value))) {
 		return false;
 	}
@@ -112,7 +113,7 @@ bool ter_stream_encode_dword32(struct ter_stream_t* const self, const uint32_t v
 	return true;
 }
 
-bool ter_stream_encode_qword64(struct ter_stream_t* const self, const uint64_t value) {
+bool ter_stream_encode_qword64(struct ter_stream_t* const self, const unsigned long long int value) {
 	if (unlikely(!ter_stream_reserve(self, self->size + sizeof value))) {
 		return false;
 	}
@@ -157,31 +158,31 @@ bool ter_stream_encode_memblock(struct ter_stream_t* const self, const void* con
 	return ter_stream_encode_ascii(self, (const char* const)mem, len);
 }
 
-bool ter_stream_encode_db(struct ter_stream_t* self, const signed argc, ...) {
+bool ter_stream_encode_db(struct ter_stream_t* self, const int argc, ...) {
 	va_list ptr;
 	va_start(ptr, argc);
 	signed num = 0;
-	for (register signed i = 0; i < argc; ++i) {
-		num += ter_stream_encode_byte8(self, va_arg(ptr, signed));
+	for (register int i = 0; i < argc; ++i) {
+		num += ter_stream_encode_byte8(self, va_arg(ptr, int));
 	}
 	return num == argc;
 }
 
 bool ter_stream_encode_imm(struct ter_stream_t* const self, const union ter_imm_t imm) {
-	const uint8_t size = ter_imm_compute_size(imm);
+	const unsigned char size = ter_imm_compute_size(imm);
 	return ter_stream_encode_memblock(self, &imm, size);
 }
 
 void ter_stream_dump(const struct ter_stream_t* const self) {
-	register const uint8_t* iter = self->mem;
-	register const uint8_t* const end = self->mem + self->size;
+	register const unsigned char* iter = self->mem;
+	register const unsigned char* const end = self->mem + self->size;
 	while (iter < end) {
 		printf("%02X ", *iter++);
 	}
 }
 
 size_t ter_stream_write(const struct ter_stream_t* const self, FILE* const out) {
-	return fwrite(self->mem, sizeof(uint8_t), self->size, out);
+	return fwrite(self->mem, sizeof(unsigned char), self->size, out);
 }
 
 bool ter_stream_serialize(const struct ter_stream_t* const self, const char* const path) {
@@ -189,7 +190,7 @@ bool ter_stream_serialize(const struct ter_stream_t* const self, const char* con
 	if (unlikely(!f)) {
 		return false;
 	}
-	const uint64_t size = (uint64_t)self->size;
+	const uint64_t size = self->size;
 	fwrite(&size, sizeof size, 1, f);
 	ter_stream_write(self, f);
 	fclose(f);
@@ -209,7 +210,7 @@ bool ter_stream_deserialize(struct ter_stream_t** const out, const char* const p
 	if (unlikely(!ter_stream_with_capacity(out, size))) {
 		return false;
 	}
-	fread((*out)->mem, sizeof(uint8_t), size, f);
+	fread((*out)->mem, sizeof(unsigned char), size, f);
 	(*out)->size = (*out)->cap = (size_t)size;
 	return true;
 }

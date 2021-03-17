@@ -2,7 +2,6 @@
 #define TER_X64_INSTRUCTION_H
 
 #include <stdbool.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,7 +37,7 @@ extern bool ter_x64_operand_flags_is_explicit(enum ter_x64_operand_flags_t flags
 extern bool ter_x64_operand_flags_is_accumulator(enum ter_x64_operand_flags_t flags);
 extern bool ter_x64_operand_flags_is_immediate(enum ter_x64_operand_flags_t flags);
 extern bool ter_x64_operand_flags_is_memory(enum ter_x64_operand_flags_t flags);
-extern uint8_t ter_x64_operand_flags_compute_operand_size(enum ter_x64_operand_flags_t flags);
+extern unsigned char ter_x64_operand_flags_compute_operand_size(enum ter_x64_operand_flags_t flags);
 
 enum ter_x64_instruction_t {
 	TER_X64_INSTRUCTION_ADC,

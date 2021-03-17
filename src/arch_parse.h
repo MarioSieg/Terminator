@@ -1,9 +1,6 @@
 #ifndef TER_ARCH_PARSE_H
 #define TER_ARCH_PARSE_H
 
-#include <stdbool.h>
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -12,20 +9,18 @@ extern "C" {
 #define TER_ARCH_PARSE_MAX_MNEMONIC 16
 #define TER_ARCH_PARSE_COMMENT '#'
 #define TER_ARCH_PARSE_SEPARATOR '|'
+#define TER_ARCH_PARSE_OP_SEPARATOR '&'
 #define TER_ARCH_PARSE_LIST ','
 #define TER_ARCH_PARSE_PIN ':'
 #define TER_ARCH_HEX_PREFIX 'x'
 #define TER_ARCH_NONE "NA"
 
 struct ter_arch_parse_instruction_info_t {
-	uint8_t mnemonic_len;
-
-	uint8_t primary_opcode;
-
-	uint16_t operand_flags[4];
-	uint8_t operand_flags_len;
-
-	uint8_t opcode_extension;
+	unsigned char mnemonic_len;
+	unsigned char primary_opcode;
+	unsigned short operand_flags[4];
+	unsigned char operand_flags_len;
+	unsigned char opcode_extension; // FF = none
 };
 
 extern void ter_rem_space(register char* line);

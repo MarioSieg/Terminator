@@ -1,10 +1,9 @@
 #include <stdio.h>
-#include <string.h>
 
 #include "arch_parse.h"
 #include "stream.h"
 
-signed main(const signed argc, const char* const* const argv) {
+int main(const int argc, const char* const* const argv) {
 	(void)argc;
 	(void)argv;
 
@@ -12,11 +11,12 @@ signed main(const signed argc, const char* const* const argv) {
 
 	struct ter_arch_parse_instruction_info_t variation;
 	char mnemonic[TER_ARCH_PARSE_MAX_MNEMONIC];
-	char line[128] = "x10 | NA | REG8, MEM8 & REG8";
+	char line[128] = "x80 | x2 | REG8, MEM8 & IMM8";
 
 	const enum ter_arch_parse_result_t result = ter_arch_parse(&line, &mnemonic, &variation);
 	if (result == TER_ARCH_PARSE_RESULT_VARIATION) {
 		printf("opcode: 0x%x\n", variation.primary_opcode);
+		printf("opcode_ex: 0x%x\n", variation.opcode_extension);
 	}
 	else {
 		printf("%d\n", result);

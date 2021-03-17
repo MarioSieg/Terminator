@@ -16,7 +16,7 @@ bool ter_x64_operand_flags_is_memory(const enum ter_x64_operand_flags_t flags) {
 	return flags >= TER_X64_OPERAND_FLAGS_MEM8 && flags <= TER_X64_OPERAND_FLAGS_MEM64;
 }
 
-uint8_t ter_x64_operand_flags_compute_operand_size(const enum ter_x64_operand_flags_t flags) {
+unsigned char ter_x64_operand_flags_compute_operand_size(const enum ter_x64_operand_flags_t flags) {
 	if (flags == TER_X64_OPERAND_FLAGS_REG64_RAX || flags & TER_X64_OPERAND_FLAGS_REG64 || flags & TER_X64_OPERAND_FLAGS_MEM64 || flags & TER_X64_OPERAND_FLAGS_IMM64) {
 		return 8;
 	}

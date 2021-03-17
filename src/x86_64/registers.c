@@ -16,7 +16,7 @@ bool ter_x64_register_is_extended(const enum ter_x64_register_t reg) {
 	return reg >= TER_x64_REGISTER_R8 && reg <= TER_x64_REGISTER_R15B;
 }
 
-const uint8_t TER_X64_REGISTER_ID_TABLE[TER_x64_REGISTER_COUNT] = {
+const unsigned char TER_X64_REGISTER_ID_TABLE[TER_x64_REGISTER_COUNT] = {
 	0x00, 0x00, 0x00, 0x04, 0x00, // RAX, EAX, AX, AH, AL
 	0x03, 0x03, 0x03, 0x07, 0x03, // RBX, EBX, BX, BH, BL
 	0x01, 0x01, 0x01, 0x05, 0x01, // RCX, ECX, CX, CH, CL
@@ -36,7 +36,7 @@ const uint8_t TER_X64_REGISTER_ID_TABLE[TER_x64_REGISTER_COUNT] = {
 	0x07, 0x07, 0x07, 0x07,       // R15, R15D, R15W, R15B
 };
 
-const uint8_t TER_X64_REGISTER_SIZE_TABLE[TER_x64_REGISTER_COUNT] = {
+const unsigned char TER_X64_REGISTER_SIZE_TABLE[TER_x64_REGISTER_COUNT] = {
 	0x08, 0x04, 0x02, 0x01, 0x01, // RAX, EAX, AX, AH, AL
 	0x08, 0x04, 0x02, 0x01, 0x01, // RBX, EBX, BX, BH, BL
 	0x08, 0x04, 0x02, 0x01, 0x01, // RCX, ECX, CX, CH, CL

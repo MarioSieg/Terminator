@@ -2,7 +2,6 @@
 #define TER_STREAM_H
 
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 
 #include "imm.h"
@@ -18,13 +17,13 @@ extern bool ter_stream_with_capacity(struct ter_stream_t** out, size_t cap);
 extern void ter_stream_release(struct ter_stream_t** self);
 extern bool ter_stream_reserve(struct ter_stream_t* self, size_t cap);
 extern void ter_stream_reverse(struct ter_stream_t* self);
-extern void ter_stream_dyn_iter(struct ter_stream_t* self, register void (* callback)(uint8_t*));
+extern void ter_stream_dyn_iter(struct ter_stream_t* self, register void (* callback)(unsigned char*));
 
-extern bool ter_stream_push(struct ter_stream_t* self, uint8_t value);
-extern bool ter_stream_encode_byte8(struct ter_stream_t* self, uint8_t value);
-extern bool ter_stream_encode_word16(struct ter_stream_t* self, uint16_t value);
-extern bool ter_stream_encode_dword32(struct ter_stream_t* self, uint32_t value);
-extern bool ter_stream_encode_qword64(struct ter_stream_t* self, uint64_t value);
+extern bool ter_stream_push(struct ter_stream_t* self, unsigned char value);
+extern bool ter_stream_encode_byte8(struct ter_stream_t* self, unsigned char value);
+extern bool ter_stream_encode_word16(struct ter_stream_t* self, unsigned short int value);
+extern bool ter_stream_encode_dword32(struct ter_stream_t* self, unsigned int value);
+extern bool ter_stream_encode_qword64(struct ter_stream_t* self, unsigned long long int value);
 extern bool ter_stream_encode_single32(struct ter_stream_t* self, float value);
 extern bool ter_stream_encode_double64(struct ter_stream_t* self, double value);
 extern bool ter_stream_encode_ascii(struct ter_stream_t* self, const char* str, size_t len);
@@ -33,7 +32,7 @@ extern bool ter_stream_encode_memblock(struct ter_stream_t* self, const void* me
 extern bool ter_stream_encode_db(struct ter_stream_t* self, signed argc, ...);
 extern bool ter_stream_encode_imm(struct ter_stream_t* self, union ter_imm_t imm);
 
-extern uint8_t* ter_stream_get_mem(struct ter_stream_t* self);
+extern unsigned char* ter_stream_get_mem(struct ter_stream_t* self);
 extern size_t ter_stream_get_size(const struct ter_stream_t* self);
 extern size_t ter_stream_get_cap(const struct ter_stream_t* self);
 

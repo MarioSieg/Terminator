@@ -2,7 +2,6 @@
 #define TER_X64_REGISTERS_H
 
 #include <stdbool.h>
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -109,13 +108,13 @@ enum ter_x64_register_t {
 	TER_x64_REGISTER_COUNT
 };
 
-extern bool ter_x64_register_is_accumulator(const enum ter_x64_register_t reg);
-extern bool ter_x64_register_is_high_byte(const enum ter_x64_register_t reg);
-extern bool ter_x64_register_is_uniform_byte(const enum ter_x64_register_t reg);
-extern bool ter_x64_register_is_extended(const enum ter_x64_register_t reg);
+extern bool ter_x64_register_is_accumulator(enum ter_x64_register_t reg);
+extern bool ter_x64_register_is_high_byte(enum ter_x64_register_t reg);
+extern bool ter_x64_register_is_uniform_byte(enum ter_x64_register_t reg);
+extern bool ter_x64_register_is_extended(enum ter_x64_register_t reg);
 
-extern const uint8_t TER_X64_REGISTER_ID_TABLE[TER_x64_REGISTER_COUNT];
-extern const uint8_t TER_X64_REGISTER_SIZE_TABLE[TER_x64_REGISTER_COUNT];
+extern const unsigned char TER_X64_REGISTER_ID_TABLE[TER_x64_REGISTER_COUNT];
+extern const unsigned char TER_X64_REGISTER_SIZE_TABLE[TER_x64_REGISTER_COUNT];
 extern const char* const TER_X64_REGISTER_MNEMONICS[TER_x64_REGISTER_COUNT];
 
 #ifdef __cplusplus
