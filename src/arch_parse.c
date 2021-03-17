@@ -61,21 +61,18 @@ enum ter_arch_parse_result_t ter_arch_parse(
 			return TER_ARCH_PARSE_RESULT_ERROR;
 		}
 
-		strncpy(*mnemonic, line, len - 1);
+		// copy with \0
+		strncpy(*mnemonic, line, len);
 		return TER_ARCH_PARSE_RESULT_MNEMONIC;
 	}
 
-	// continue parsing variation:
-	// first comes the opcode written in hex with a 0x prefix:
-	const char* const prefix = TER_ARCH_HEX_PREFIX;
-
-	// if line does not begin with 0x (opcode), error:
-	if (unlikely(*line != *prefix || line[1] != prefix[1])) {
+	// if line does not begin with hex prefix x (opcode), error:
+	if (unlikely(*line != TER_ARCH_HEX_PREFIX)) {
 		return TER_ARCH_PARSE_RESULT_ERROR;
 	}
 
-	// skip 0x
-	line += 2;
+	// skip hex prefix
+	++line;
 
 	// find next separator to copy length '|':
 	char* sep = strchr(line, TER_ARCH_PARSE_SEPARATOR);
@@ -101,7 +98,7 @@ enum ter_arch_parse_result_t ter_arch_parse(
 	line = sep;
 	++line;
 
-	// todo: parse flags
+	// todo: parse extension
 
 	variation->primary_opcode = opcode & 0xFF;
 

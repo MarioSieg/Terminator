@@ -14,7 +14,8 @@ extern "C" {
 #define TER_ARCH_PARSE_SEPARATOR '|'
 #define TER_ARCH_PARSE_LIST ','
 #define TER_ARCH_PARSE_PIN ':'
-#define TER_ARCH_HEX_PREFIX "0x"
+#define TER_ARCH_HEX_PREFIX 'x'
+#define TER_ARCH_NONE "NA"
 
 struct ter_arch_parse_instruction_info_t {
 	uint8_t mnemonic_len;

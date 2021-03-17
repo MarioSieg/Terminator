@@ -12,11 +12,11 @@ signed main(const signed argc, const char* const* const argv) {
 
 	struct ter_arch_parse_instruction_info_t variation;
 	char mnemonic[TER_ARCH_PARSE_MAX_MNEMONIC];
-	char line[128] = " \tADC:  ";
+	char line[128] = "x10 | NA | REG8, MEM8 & REG8";
 
 	const enum ter_arch_parse_result_t result = ter_arch_parse(&line, &mnemonic, &variation);
-	if (result == TER_ARCH_PARSE_RESULT_MNEMONIC) {
-		printf("%s\n", mnemonic);
+	if (result == TER_ARCH_PARSE_RESULT_VARIATION) {
+		printf("opcode: 0x%x\n", variation.primary_opcode);
 	}
 	else {
 		printf("%d\n", result);
